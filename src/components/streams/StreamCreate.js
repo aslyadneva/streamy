@@ -1,72 +1,22 @@
 import React, { Component } from 'react'; 
-import { Field, reduxForm } from 'redux-form'; 
+import StreamForm from './StreamForm'; 
 import { connect } from 'react-redux'; 
 import { createStream } from '../../actions'; 
 
 class StreamCreate extends Component {
-  renderError = ({error, touched}) => {
-    //touched is a property on the meta object that returns a boolean if the user selects then 
-    // deselects the form 
-    if (touched && error) {
-      return (
-        <div className="ui error message">
-          <div className="header">{error}</div>
-        </div>
-      ); 
-    }
-  }
-
-  renderInput = ({ input, label, meta}) => {
-    const className = `field ${meta.error && meta.touched ? 'error' : ''}`
-    return (    
-      <div className={className}>
-        <label>{label}</label>
-        <input {...input} autoComplete="off"/>
-        {this.renderError(meta)}
-      </div>
-    );
-  }
 
   onSubmit = (formValues) => {
-    //redux form already calls event.preventDefault
-    //doesn't pass an event object but passes all the submited form values instead 
-    console.log(formValues); 
-
-    // pass all the form values to the createStream action creator
     this.props.createStream(formValues)
   }
 
-  // Redux form passes ALL its props to the render method!
-  // HandleSubmit is one of the built in prop methods of Redux Form
   render () {
     return (
-      <form onSubmit={this.props.handleSubmit(this.onSubmit)} className="ui form error">
-        {/* // The component property sends all the props to the individual 'fields' as formProps */}
-        <Field name="title" label="Enter Title" component={this.renderInput}/>
-        <Field name="description" label="Enter Description" component={this.renderInput}/>
-        <button className="ui button primary">Sumbit</button>
-      </form>
+      <div>
+        <h3>Create a stream</h3>
+        <StreamForm onSubmit={this.onSubmit}/>
+      </div>
     ); 
   }  
 }
 
-//If there are no mistakes, return an empty object 
-//If something is wrong, return an object with the a key as the form title and value as the error message
-//Ex. {title: 'You must enter a title'}
-// Redux will match the key name of the error object with the Field name and render the error message through 
-// the component property of the Field (through meta.error!!!)
-const validate = (formValues) => {
-  const errors = {} 
-  if (!formValues.title) {
-    errors.title = 'You must enter a title'
-  } 
-  if (!formValues.description) {
-    errors.description = 'You must enter a description'
-  }
-
-  return errors; 
-};
-
-const formWrapped = reduxForm({form: 'streamCreate', validate: validate})(StreamCreate); 
-
-export default connect(null, { createStream })(formWrapped);
+export default connect(null, { createStream })(StreamCreate);

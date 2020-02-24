@@ -1,3 +1,5 @@
+import history from '../history'; 
+
 import { 
   SIGN_IN,
   SIGN_OUT,
@@ -39,6 +41,11 @@ export const createStream = (formValues) => {
       type: CREATE_STREAM, 
       payload: response.data
     })
+
+    // Do some programmatic navigation to
+    // return the user back to the root route aka the Streams List
+    history.push('/');
+    
   } 
 }
 
@@ -63,18 +70,27 @@ export const fetchStream = (id) => {
       type: FETCH_STREAM, 
       payload: response.data
     })
+
+    
   }
 }
 
 export const editStream = (id, formValues) => {
   return async function (dispatch) {
     
-    const response = await streams.put(`/streams/${id}`, formValues); 
+    // a PATCH request only updates the specific properties and leaves the others unchanged in the 
+    // API records 
+    // a PUT request replaces any previous properties with the new ones that are sent 
+    // aka if you don't include a propetry on a PUT request, 
+    // it will delete it from the previous record 
+    const response = await streams.patch(`/streams/${id}`, formValues); 
 
     dispatch({
       type: EDIT_STREAM, 
       payload: response.data
     })
+
+    history.push('/');
   }
 }
 
